@@ -226,4 +226,16 @@ document.getElementById('progBg').addEventListener('click', e => {
 });
 
 // Event delegation — survives render() replacing the track list DOM
-docu
+document.getElementById('speeds').addEventListener('click', e => {
+  const b = e.target.closest('.spd');
+  if (!b) return;
+  speed = parseFloat(b.dataset.s);
+  if (audio) audio.playbackRate = speed;
+  document.querySelectorAll('.spd').forEach(x => x.classList.remove('on'));
+  b.classList.add('on');
+});
+
+render();
+</script>
+</body>
+</html>
