@@ -118,20 +118,20 @@ const TRACKS = [
   { num:6,  file:"06_01_Business_Expenses.mp3",      name:"Business Expenses",              dur:"~10m", badge:"high",     group:"restaurant", why:"Meals, uniforms, management fees — the basics that get people audited." },
   { num:7,  file:"07_02_Depreciation.mp3",           name:"Depreciation",                   dur:"~10m", badge:"high",     group:"restaurant", why:"QIP and bonus depreciation — where restaurant tax money is captured or left behind." },
   { num:8,  file:"08_05_Multi_Entity_Ops.mp3",       name:"Multi-Entity Operations",        dur:"~9m",  badge:"high",     group:"restaurant", why:"Intercompany pricing, loans, shared employees — the complexity you live with every day." },
-  { num:9,  file:"09_07_Business_Acquisitions.mp3",  name:"Business Acquisitions",          dur:"~8m",  badge:"high",     group:"restaurant", why:"Asset vs. stock purchase, §1060 allocation — every deal needs this framework." },
-  { num:10, file:"10_09_Franchise_Issues.mp3",       name:"Franchise Issues",               dur:"~7m",  badge:"medium",   group:"restaurant", why:"§197 amortization of fees, royalty deductibility — franchise-specific rules." },
+  { num:9,  file:"09_07_Business_Acquisitions.mp3",  name:"Business Acquisitions",          dur:"~8m",  badge:"high",     group:"restaurant", why:"Asset vs. stock purchase, section 1060 allocation — every deal needs this framework." },
+  { num:10, file:"10_09_Franchise_Issues.mp3",       name:"Franchise Issues",               dur:"~7m",  badge:"medium",   group:"restaurant", why:"Section 197 amortization of fees, royalty deductibility — franchise-specific rules." },
   { num:11, file:"11_10_Leasehold_Improvements.mp3", name:"Leasehold Improvements",         dur:"~10m", badge:"high",     group:"restaurant", why:"Every build-out. QIP classification and cost segregation can save six figures." },
-  { num:12, file:"12_11_Real_Estate.mp3",            name:"Real Estate",                    dur:"~10m", badge:"medium",   group:"restaurant", why:"For when you own instead of lease. §1031, PropCo structure, passive rules." },
+  { num:12, file:"12_11_Real_Estate.mp3",            name:"Real Estate",                    dur:"~10m", badge:"medium",   group:"restaurant", why:"For when you own instead of lease. Section 1031, PropCo structure, passive rules." },
   { num:13, file:"13_12_Retirement_Planning.mp3",    name:"Retirement Planning",            dur:"~8m",  badge:"medium",   group:"restaurant", why:"Controlled group rules catch multi-entity operators off guard." },
   { num:14, file:"14_14_State_Tax_NY.mp3",           name:"State Tax: New York",            dur:"~10m", badge:"critical", group:"restaurant", why:"PTET, UBT, MCTMT — New York is expensive and aggressive." },
   { num:15, file:"15_15_State_Tax_NJ.mp3",           name:"State Tax: New Jersey",          dur:"~8m",  badge:"high",     group:"restaurant", why:"NJ BAIT election, combined reporting, payroll add-ons." },
   { num:16, file:"16_16_State_Tax_CT.mp3",           name:"State Tax: Connecticut",         dur:"~6m",  badge:"medium",   group:"restaurant", why:"CT PTE tax, 7.35% meals rate, Business Entity Tax." },
   // Warehouse & Logistics
-  { num:17, file:"17_17_Logistics_Sales_Tax.mp3",    name:"Logistics Sales Tax",            dur:"~9m",  badge:"critical", group:"logistics",  why:"Warehousing, fulfillment, and transportation are taxed differently in every state. Invoice structure is everything." },
-  { num:18, file:"18_18_Nexus_Expansion.mp3",        name:"Nexus: Entering New States",     dur:"~9m",  badge:"critical", group:"logistics",  why:"A warehouse lease creates tax obligations from day one in that state. Know before you sign." },
-  { num:19, file:"19_19_Driver_Classification.mp3",  name:"Driver & Worker Classification", dur:"~10m", badge:"critical", group:"logistics",  why:"The most-enforced area in logistics. NJ's ABC test makes nearly all drivers employees." },
-  { num:20, file:"20_20_Logistics_Equipment.mp3",    name:"Logistics Equipment",            dur:"~8m",  badge:"high",     group:"logistics",  why:"Forklifts, fleet trucks, racking — verify GVWR on every vehicle or you lose the deduction." },
-  { num:21, file:"21_21_DOT_Compliance.mp3",         name:"DOT Compliance & Tax",           dur:"~11m", badge:"medium",   group:"logistics",  why:"IFTA, Form 2290, drug testing programs — all deductible, all required to be filed." },
+  { num:17, file:"17_17_Logistics_Sales_Tax.mp3",    name:"Logistics Sales Tax",            dur:"~9m",  badge:"critical", group:"logistics",   why:"Warehousing, fulfillment, and transportation are taxed differently in every state. Invoice structure is everything." },
+  { num:18, file:"18_18_Nexus_Expansion.mp3",        name:"Nexus: Entering New States",     dur:"~9m",  badge:"critical", group:"logistics",   why:"A warehouse lease creates tax obligations from day one in that state. Know before you sign." },
+  { num:19, file:"19_19_Driver_Classification.mp3",  name:"Driver & Worker Classification", dur:"~10m", badge:"critical", group:"logistics",   why:"The most-enforced area in logistics. NJ's ABC test makes nearly all drivers employees." },
+  { num:20, file:"20_20_Logistics_Equipment.mp3",    name:"Logistics Equipment",            dur:"~8m",  badge:"high",     group:"logistics",   why:"Forklifts, fleet trucks, racking — verify GVWR on every vehicle or you lose the deduction." },
+  { num:21, file:"21_21_DOT_Compliance.mp3",         name:"DOT Compliance & Tax",           dur:"~11m", badge:"medium",   group:"logistics",   why:"IFTA, Form 2290, drug testing programs — all deductible, all required to be filed." },
 ];
 
 let cur = -1, playing = false, speed = 1, audio = null, timer = null;
@@ -142,7 +142,7 @@ function render() {
   const c = document.getElementById('listContainer');
   const groups = [
     { key:'restaurant', label:'🍽️ Restaurant & Franchise — 16 Episodes' },
-    { key:'logistics',  label:'📦 Warehouse & Logistics — 5 Episodes'  },
+    { key:'logistics',  label:'📦 Warehouse & Logistics — 5 Episodes' },
   ];
   c.innerHTML = '';
   groups.forEach(g => {
@@ -157,15 +157,12 @@ function render() {
       const div = document.createElement('div');
       div.className = 'track' + (i===cur ? (playing?' playing':' active') : '');
       div.innerHTML = `
-        <button class="play-btn">${i===cur&&playing?'⏸':'▶'}</button>
-        <div class="track-num">${t.num}</div>
-        <div class="track-info">
-          <div class="track-name">${t.name}</div>
-          <div class="track-why">${t.why}</div>
-        </div>
-        <div class="track-right">
-          <span class="badge badge-${t.badge}">${t.badge.toUpperCase()}</span>
-          <span class="track-dur">${t.dur}</span>
+        <span class="t-play">${i===cur&&playing?'⏸':'▶'}</span>
+        <span class="t-num">${t.num}</span>
+        <div class="t-info">
+          <div class="t-name">${t.name}</div>
+          <div class="t-why">${t.why}</div>
+          <div class="t-meta"><span class="badge ${t.badge}">${t.badge.toUpperCase()}</span> ${t.dur}</div>
         </div>`;
       div.addEventListener('click', () => { i===cur&&playing ? pause() : i===cur ? resume() : play(i); });
       list.appendChild(div);
@@ -188,4 +185,49 @@ function play(i) {
     if (!audio) return;
     const pct = audio.duration ? audio.currentTime/audio.duration*100 : 0;
     document.getElementById('progFill').style.width = pct+'%';
-    document.getElementById('pElapsed').
+    document.getElementById('pElapsed').textContent = fmt(audio.currentTime);
+    if (audio.duration) document.getElementById('pTotal').textContent = fmt(audio.duration);
+  }, 500);
+  audio.onended = () => { if (cur < TRACKS.length-1) play(cur+1); else { playing=false; render(); } };
+  render();
+}
+
+function pause() {
+  audio.pause(); playing = false;
+  document.getElementById('btnPlay').textContent = '▶';
+  render();
+}
+
+function resume() {
+  audio.play(); playing = true;
+  document.getElementById('btnPlay').textContent = '⏸';
+  render();
+}
+
+document.getElementById('btnPlay').addEventListener('click', () => {
+  if (cur === -1) play(0);
+  else if (playing) pause();
+  else resume();
+});
+document.getElementById('btnPrev').addEventListener('click', () => { if (cur > 0) play(cur-1); });
+document.getElementById('btnNext').addEventListener('click', () => { if (cur < TRACKS.length-1) play(cur+1); });
+
+document.getElementById('progBar').addEventListener('click', e => {
+  if (!audio || !audio.duration) return;
+  const r = e.currentTarget.getBoundingClientRect();
+  audio.currentTime = ((e.clientX - r.left) / r.width) * audio.duration;
+});
+
+document.querySelectorAll('.spd').forEach(b => {
+  b.addEventListener('click', () => {
+    speed = parseFloat(b.dataset.s);
+    if (audio) audio.playbackRate = speed;
+    document.querySelectorAll('.spd').forEach(x => x.classList.remove('on'));
+    b.classList.add('on');
+  });
+});
+
+render();
+</script>
+</body>
+</html>
