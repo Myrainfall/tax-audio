@@ -3,239 +3,189 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tax Intelligence — Listening Guide</title>
+<title>Tax Intelligence — Audio</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #0f1117; color: #e0e0e0; min-height: 100vh; padding-bottom: 60px; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #0f1117; color: #e0e0e0; min-height: 100vh; padding-bottom: 90px; }
 
-  .hero { padding: 40px 32px 24px; border-bottom: 1px solid #1e2130; }
-  .hero h1 { font-size: 28px; font-weight: 700; color: #fff; }
-  .hero p { color: #666; margin-top: 6px; font-size: 14px; }
-  .stats { display: flex; gap: 32px; margin-top: 20px; }
-  .stat { }
-  .stat-val { font-size: 24px; font-weight: 700; color: #7b8cde; }
-  .stat-label { font-size: 12px; color: #555; margin-top: 2px; }
+  .hero { padding: 32px 24px 20px; border-bottom: 1px solid #1e2130; }
+  .hero h1 { font-size: 24px; font-weight: 700; color: #fff; }
+  .hero p { color: #555; margin-top: 4px; font-size: 13px; }
+  .stats { display: flex; gap: 24px; margin-top: 16px; flex-wrap: wrap; }
+  .stat-val { font-size: 22px; font-weight: 700; color: #7b8cde; }
+  .stat-label { font-size: 11px; color: #555; margin-top: 1px; }
 
-  .section-title { padding: 28px 32px 12px; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: #555; }
+  .section-header { padding: 20px 24px 8px; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: #3a3f5a; display: flex; align-items: center; gap: 8px; }
+  .section-header::after { content: ''; flex: 1; height: 1px; background: #1a1d27; }
 
-  .track-list { padding: 0 24px; display: flex; flex-direction: column; gap: 10px; }
+  .track-list { padding: 0 16px; display: flex; flex-direction: column; gap: 8px; }
 
-  .track { background: #1a1d27; border-radius: 14px; padding: 18px 20px; display: flex; align-items: center; gap: 16px; transition: background 0.15s; }
+  .track { background: #1a1d27; border-radius: 12px; padding: 14px 16px; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: background 0.12s; border: 1px solid transparent; }
   .track:hover { background: #20233a; }
-  .track.active { background: #1e2240; border: 1px solid #3a4080; }
-  .track.playing { background: #1a2235; border: 1px solid #7b8cde; }
+  .track.active { border-color: #7b8cde33; background: #1c1f35; }
+  .track.playing { border-color: #7b8cde; background: #1a2038; }
 
-  .track-num { font-size: 13px; color: #444; width: 22px; text-align: center; flex-shrink: 0; font-weight: 500; }
+  .play-btn { width: 40px; height: 40px; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 14px; transition: all 0.12s; background: #252840; color: #7b8cde; }
+  .track:hover .play-btn { background: #7b8cde22; }
+  .track.playing .play-btn { background: #7b8cde; color: #fff; }
+
+  .track-num { font-size: 12px; color: #3a3f5a; width: 18px; text-align: center; flex-shrink: 0; }
   .track.playing .track-num { color: #7b8cde; }
 
   .track-info { flex: 1; min-width: 0; }
-  .track-name { font-size: 15px; font-weight: 600; color: #fff; }
-  .track-why { font-size: 12px; color: #666; margin-top: 4px; line-height: 1.5; }
+  .track-name { font-size: 14px; font-weight: 600; color: #ddd; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .track.playing .track-name { color: #a5b4fc; }
+  .track-why { font-size: 11px; color: #555; margin-top: 3px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
-  .track-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0; }
-  .badge { font-size: 10px; padding: 3px 8px; border-radius: 5px; font-weight: 600; letter-spacing: 0.5px; }
+  .track-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
+  .badge { font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: 700; letter-spacing: 0.3px; }
   .badge-critical { background: #3d1515; color: #f87171; }
   .badge-high { background: #152035; color: #60a5fa; }
   .badge-medium { background: #152515; color: #4ade80; }
-  .track-dur { font-size: 12px; color: #555; }
+  .track-dur { font-size: 11px; color: #3a3f5a; }
 
-  .play-btn { width: 44px; height: 44px; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; background: #252840; color: #7b8cde; }
-  .play-btn:hover { background: #7b8cde; color: #fff; transform: scale(1.05); }
-  .play-btn.is-playing { background: #7b8cde; color: #fff; }
-
-  .player-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #13151f; border-top: 1px solid #1e2130; padding: 12px 24px; display: flex; align-items: center; gap: 16px; z-index: 100; }
-  .pb-info { flex: 1; min-width: 0; }
-  .pb-title { font-size: 14px; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .pb-sub { font-size: 11px; color: #555; margin-top: 2px; }
-  .pb-controls { display: flex; align-items: center; gap: 10px; }
-  .pb-btn { width: 36px; height: 36px; border-radius: 50%; border: none; cursor: pointer; background: #252840; color: #aaa; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
-  .pb-btn:hover { background: #35385a; color: #fff; }
-  .pb-play { background: #7b8cde; color: #fff; width: 44px; height: 44px; }
-  .pb-play:hover { background: #8f9de8; }
-  .pb-progress { flex: 1; max-width: 300px; }
-  .pb-bar-bg { height: 3px; background: #2a2d3a; border-radius: 2px; }
-  .pb-bar-fill { height: 3px; background: #7b8cde; border-radius: 2px; width: 0%; transition: width 0.5s linear; }
-  .pb-time { font-size: 11px; color: #555; display: flex; justify-content: space-between; margin-top: 4px; }
-  .speed-row { display: flex; gap: 6px; }
-  .spd { padding: 5px 9px; font-size: 11px; border-radius: 6px; border: none; background: #252840; color: #666; cursor: pointer; transition: all 0.12s; }
+  /* Bottom player */
+  .player { position: fixed; bottom: 0; left: 0; right: 0; background: #13151fee; backdrop-filter: blur(12px); border-top: 1px solid #1e2130; padding: 10px 16px; z-index: 100; }
+  .player-top { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+  .p-info { flex: 1; min-width: 0; }
+  .p-title { font-size: 13px; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .p-sub { font-size: 10px; color: #555; margin-top: 1px; }
+  .p-controls { display: flex; align-items: center; gap: 8px; }
+  .p-btn { width: 32px; height: 32px; border-radius: 50%; border: none; cursor: pointer; background: #252840; color: #aaa; display: flex; align-items: center; justify-content: center; font-size: 12px; transition: all 0.12s; }
+  .p-btn:hover { color: #fff; background: #35385a; }
+  .p-play { background: #7b8cde; color: #fff; width: 40px; height: 40px; font-size: 14px; }
+  .p-play:hover { background: #8f9de8; }
+  .player-bottom { display: flex; align-items: center; gap: 10px; }
+  .prog-wrap { flex: 1; }
+  .prog-bg { height: 3px; background: #2a2d3a; border-radius: 2px; cursor: pointer; }
+  .prog-fill { height: 3px; background: linear-gradient(90deg, #7b8cde, #a78bfa); border-radius: 2px; width: 0%; transition: width 0.4s linear; pointer-events: none; }
+  .p-time { font-size: 10px; color: #555; white-space: nowrap; }
+  .speeds { display: flex; gap: 4px; }
+  .spd { padding: 4px 7px; font-size: 10px; border-radius: 5px; border: none; background: #252840; color: #555; cursor: pointer; transition: all 0.12s; }
   .spd.on { background: #3a4080; color: #a5b4fc; }
-  .spd:hover { color: #fff; }
-
-  .divider { margin: 8px 32px; height: 1px; background: #1a1d27; }
-  .section-label { padding: 6px 24px 2px; font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: #3a3f5a; }
-
-  audio { display: none; }
 </style>
 </head>
 <body>
 
 <div class="hero">
   <h1>🎧 Tax Intelligence</h1>
-  <p>Audio Knowledge Base · Restaurant &amp; Franchise Operator · Federal + NY/NJ/CT</p>
+  <p>21 episodes · Restaurant, Franchise &amp; Logistics · Federal + NY / NJ / CT</p>
   <div class="stats">
-    <div class="stat"><div class="stat-val">15</div><div class="stat-label">Episodes</div></div>
-    <div class="stat"><div class="stat-val">~2h</div><div class="stat-label">Total Runtime</div></div>
-    <div class="stat"><div class="stat-val">16</div><div class="stat-label">Tax Topics</div></div>
+    <div><div class="stat-val">21</div><div class="stat-label">Episodes</div></div>
+    <div><div class="stat-val">~3h</div><div class="stat-label">Total</div></div>
+    <div><div class="stat-val">16</div><div class="stat-label">Restaurant topics</div></div>
+    <div><div class="stat-val">5</div><div class="stat-label">Logistics topics</div></div>
   </div>
 </div>
 
-<div class="section-title">🔥 Start Here — High Impact</div>
+<div id="listContainer"></div>
 
-<div class="track-list" id="trackList"></div>
-
-<!-- Fixed player bar -->
-<div class="player-bar">
-  <div class="pb-info">
-    <div class="pb-title" id="pbTitle">Select a track to play</div>
-    <div class="pb-sub" id="pbSub">Tax Intelligence Audio</div>
+<div class="player">
+  <div class="player-top">
+    <div class="p-info">
+      <div class="p-title" id="pTitle">Tap a track to play</div>
+      <div class="p-sub" id="pSub">Tax Intelligence Audio</div>
+    </div>
+    <div class="p-controls">
+      <button class="p-btn" id="btnPrev">⏮</button>
+      <button class="p-btn p-play" id="btnPlay">▶</button>
+      <button class="p-btn" id="btnNext">⏭</button>
+    </div>
   </div>
-  <div class="pb-progress">
-    <div class="pb-bar-bg"><div class="pb-bar-fill" id="pbFill"></div></div>
-    <div class="pb-time"><span id="pbElapsed">0:00</span><span id="pbTotal">—</span></div>
-  </div>
-  <div class="pb-controls">
-    <button class="pb-btn" id="pbPrev">⏮</button>
-    <button class="pb-btn pb-play" id="pbPlay">▶</button>
-    <button class="pb-btn" id="pbNext">⏭</button>
-  </div>
-  <div class="speed-row">
-    <button class="spd" data-s="0.85">0.85×</button>
-    <button class="spd on" data-s="1">1×</button>
-    <button class="spd" data-s="1.25">1.25×</button>
-    <button class="spd" data-s="1.5">1.5×</button>
+  <div class="player-bottom">
+    <span class="p-time" id="pElapsed">0:00</span>
+    <div class="prog-wrap">
+      <div class="prog-bg" id="progBg"><div class="prog-fill" id="progFill"></div></div>
+    </div>
+    <span class="p-time" id="pTotal">—</span>
+    <div class="speeds">
+      <button class="spd" data-s="0.85">0.85×</button>
+      <button class="spd on" data-s="1">1×</button>
+      <button class="spd" data-s="1.25">1.25×</button>
+      <button class="spd" data-s="1.5">1.5×</button>
+    </div>
   </div>
 </div>
 
 <script>
 const TRACKS = [
-  { num:1,  file:"01_13_Audit_Recordkeeping.mp3",    name:"Audit & Recordkeeping",         dur:"~8m",  badge:"critical", why:"Start here. Understand how the IRS thinks about your restaurants before anything else." },
-  { num:2,  file:"02_06_Sales_Use_Tax.mp3",           name:"Sales & Use Tax",               dur:"~9m",  badge:"critical", why:"NY, NJ, and CT each have different rules. Getting this wrong creates years of back-tax exposure." },
-  { num:3,  file:"03_03_Payroll_Employment.mp3",      name:"Payroll & Employment",          dur:"~9m",  badge:"critical", why:"The Trust Fund Recovery Penalty is personal liability. This one matters more than any other." },
-  { num:4,  file:"04_08_Business_Sales.mp3",          name:"Business Sales & Dispositions", dur:"~8m",  badge:"high",     why:"Read this even if you're not selling. Personal goodwill and recapture will stick with you." },
-  { num:5,  file:"05_04_Entity_Structure.mp3",        name:"Entity Structure",              dur:"~8m",  badge:"high",     why:"How your LLCs are classified determines everything about how your income is taxed." },
-  { num:6,  file:"06_01_Business_Expenses.mp3",       name:"Business Expenses",             dur:"~10m", badge:"high",     why:"Meals, uniforms, management fees — the basics that get people audited." },
-  { num:7,  file:"07_02_Depreciation.mp3",            name:"Depreciation",                  dur:"~10m", badge:"high",     why:"QIP, bonus depreciation, §179 — this is where restaurant money is captured or left behind." },
-  { num:8,  file:"08_05_Multi_Entity_Ops.mp3",        name:"Multi-Entity Operations",       dur:"~9m",  badge:"high",     why:"Intercompany pricing, loans, shared employees — the complexity you live with every day." },
-  { num:9,  file:"09_07_Business_Acquisitions.mp3",   name:"Business Acquisitions",         dur:"~8m",  badge:"high",     why:"Asset vs. stock purchase, §1060 allocation — every deal you do needs this framework." },
-  { num:10, file:"10_09_Franchise_Issues.mp3",        name:"Franchise Issues",              dur:"~7m",  badge:"medium",   why:"§197 amortization of fees, royalty deductibility — franchise-specific tax rules." },
-  { num:11, file:"11_10_Leasehold_Improvements.mp3",  name:"Leasehold Improvements",        dur:"~10m", badge:"high",     why:"Every build-out. QIP classification and cost segregation can save six figures per project." },
-  { num:12, file:"12_11_Real_Estate.mp3",             name:"Real Estate",                   dur:"~10m", badge:"medium",   why:"For when you're ready to own instead of lease. §1031, PropCo structure, passive rules." },
-  { num:13, file:"13_12_Retirement_Planning.mp3",     name:"Retirement Planning",           dur:"~8m",  badge:"medium",   why:"Controlled group rules catch multi-entity operators off guard. Know before you open a plan." },
-  { num:14, file:"14_14_State_Tax_NY.mp3",            name:"State Tax: New York",           dur:"~10m", badge:"critical", why:"PTET, UBT, MCTMT — New York is expensive and aggressive. Know what you owe." },
-  { num:15, file:"15_15_State_Tax_NJ.mp3",            name:"State Tax: New Jersey",         dur:"~8m",  badge:"high",     why:"NJ BAIT election, combined reporting, payroll add-ons — NJ traps for the unwary." },
-  { num:16, file:null,                                name:"State Tax: Connecticut",        dur:"~6m",  badge:"medium",   why:"CT PTE tax, 7.35% meals rate, BET filing. (Audio generating — check back soon.)" },
+  // Restaurant & Franchise
+  { num:1,  file:"01_13_Audit_Recordkeeping.mp3",   name:"Audit & Recordkeeping",          dur:"~8m",  badge:"critical", group:"restaurant", why:"How the IRS thinks about your restaurants. Start here before anything else." },
+  { num:2,  file:"02_06_Sales_Use_Tax.mp3",          name:"Sales & Use Tax",                dur:"~9m",  badge:"critical", group:"restaurant", why:"NY, NJ, CT each draw the line differently on food, catering, and alcohol." },
+  { num:3,  file:"03_03_Payroll_Employment.mp3",     name:"Payroll & Employment",           dur:"~9m",  badge:"critical", group:"restaurant", why:"Trust Fund Recovery Penalty is personal. The most important section you'll listen to." },
+  { num:4,  file:"04_08_Business_Sales.mp3",         name:"Business Sales & Dispositions",  dur:"~8m",  badge:"high",     group:"restaurant", why:"Personal goodwill, depreciation recapture, installment sales. Read before you sell anything." },
+  { num:5,  file:"05_04_Entity_Structure.mp3",       name:"Entity Structure",               dur:"~8m",  badge:"high",     group:"restaurant", why:"How your LLCs are classified determines how all your income is taxed." },
+  { num:6,  file:"06_01_Business_Expenses.mp3",      name:"Business Expenses",              dur:"~10m", badge:"high",     group:"restaurant", why:"Meals, uniforms, management fees — the basics that get people audited." },
+  { num:7,  file:"07_02_Depreciation.mp3",           name:"Depreciation",                   dur:"~10m", badge:"high",     group:"restaurant", why:"QIP and bonus depreciation — where restaurant tax money is captured or left behind." },
+  { num:8,  file:"08_05_Multi_Entity_Ops.mp3",       name:"Multi-Entity Operations",        dur:"~9m",  badge:"high",     group:"restaurant", why:"Intercompany pricing, loans, shared employees — the complexity you live with every day." },
+  { num:9,  file:"09_07_Business_Acquisitions.mp3",  name:"Business Acquisitions",          dur:"~8m",  badge:"high",     group:"restaurant", why:"Asset vs. stock purchase, §1060 allocation — every deal needs this framework." },
+  { num:10, file:"10_09_Franchise_Issues.mp3",       name:"Franchise Issues",               dur:"~7m",  badge:"medium",   group:"restaurant", why:"§197 amortization of fees, royalty deductibility — franchise-specific rules." },
+  { num:11, file:"11_10_Leasehold_Improvements.mp3", name:"Leasehold Improvements",         dur:"~10m", badge:"high",     group:"restaurant", why:"Every build-out. QIP classification and cost segregation can save six figures." },
+  { num:12, file:"12_11_Real_Estate.mp3",            name:"Real Estate",                    dur:"~10m", badge:"medium",   group:"restaurant", why:"For when you own instead of lease. §1031, PropCo structure, passive rules." },
+  { num:13, file:"13_12_Retirement_Planning.mp3",    name:"Retirement Planning",            dur:"~8m",  badge:"medium",   group:"restaurant", why:"Controlled group rules catch multi-entity operators off guard." },
+  { num:14, file:"14_14_State_Tax_NY.mp3",           name:"State Tax: New York",            dur:"~10m", badge:"critical", group:"restaurant", why:"PTET, UBT, MCTMT — New York is expensive and aggressive." },
+  { num:15, file:"15_15_State_Tax_NJ.mp3",           name:"State Tax: New Jersey",          dur:"~8m",  badge:"high",     group:"restaurant", why:"NJ BAIT election, combined reporting, payroll add-ons." },
+  { num:16, file:"16_16_State_Tax_CT.mp3",           name:"State Tax: Connecticut",         dur:"~6m",  badge:"medium",   group:"restaurant", why:"CT PTE tax, 7.35% meals rate, Business Entity Tax." },
+  // Warehouse & Logistics
+  { num:17, file:"17_17_Logistics_Sales_Tax.mp3",    name:"Logistics Sales Tax",            dur:"~9m",  badge:"critical", group:"logistics",  why:"Warehousing, fulfillment, and transportation are taxed differently in every state. Invoice structure is everything." },
+  { num:18, file:"18_18_Nexus_Expansion.mp3",        name:"Nexus: Entering New States",     dur:"~9m",  badge:"critical", group:"logistics",  why:"A warehouse lease creates tax obligations from day one in that state. Know before you sign." },
+  { num:19, file:"19_19_Driver_Classification.mp3",  name:"Driver & Worker Classification", dur:"~10m", badge:"critical", group:"logistics",  why:"The most-enforced area in logistics. NJ's ABC test makes nearly all drivers employees." },
+  { num:20, file:"20_20_Logistics_Equipment.mp3",    name:"Logistics Equipment",            dur:"~8m",  badge:"high",     group:"logistics",  why:"Forklifts, fleet trucks, racking — verify GVWR on every vehicle or you lose the deduction." },
+  { num:21, file:"21_21_DOT_Compliance.mp3",         name:"DOT Compliance & Tax",           dur:"~11m", badge:"medium",   group:"logistics",  why:"IFTA, Form 2290, drug testing programs — all deductible, all required to be filed." },
 ];
 
-let currentIdx = -1;
-let isPlaying = false;
-let speed = 1.0;
-let audio = null;
-let timer = null;
+let cur = -1, playing = false, speed = 1, audio = null, timer = null;
 
-function renderTracks() {
-  const list = document.getElementById('trackList');
-  list.innerHTML = '';
-  TRACKS.forEach((t, i) => {
-    const div = document.createElement('div');
-    div.className = 'track' + (i === currentIdx ? (isPlaying ? ' playing' : ' active') : '');
-    const unavail = !t.file;
-    div.innerHTML = `
-      <button class="play-btn ${i === currentIdx && isPlaying ? 'is-playing' : ''}" data-i="${i}" ${unavail ? 'disabled style="opacity:0.3"' : ''}>
-        ${i === currentIdx && isPlaying ? '⏸' : '▶'}
-      </button>
-      <div class="track-num">${t.num}</div>
-      <div class="track-info">
-        <div class="track-name">${t.name}${unavail ? ' <span style="font-size:11px;color:#555">(soon)</span>' : ''}</div>
-        <div class="track-why">${t.why}</div>
-      </div>
-      <div class="track-meta">
-        <span class="badge badge-${t.badge}">${t.badge.toUpperCase()}</span>
-        <span class="track-dur">${t.dur}</span>
-      </div>
-    `;
-    list.appendChild(div);
-  });
-  list.querySelectorAll('.play-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const i = parseInt(btn.dataset.i);
-      if (i === currentIdx && isPlaying) { pauseAudio(); }
-      else if (i === currentIdx && !isPlaying) { resumeAudio(); }
-      else { playTrack(i); }
+function fmt(s) { return Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0'); }
+
+function render() {
+  const c = document.getElementById('listContainer');
+  const groups = [
+    { key:'restaurant', label:'🍽️ Restaurant & Franchise — 16 Episodes' },
+    { key:'logistics',  label:'📦 Warehouse & Logistics — 5 Episodes'  },
+  ];
+  c.innerHTML = '';
+  groups.forEach(g => {
+    const hdr = document.createElement('div');
+    hdr.className = 'section-header';
+    hdr.textContent = g.label;
+    c.appendChild(hdr);
+    const list = document.createElement('div');
+    list.className = 'track-list';
+    TRACKS.filter(t => t.group === g.key).forEach(t => {
+      const i = TRACKS.indexOf(t);
+      const div = document.createElement('div');
+      div.className = 'track' + (i===cur ? (playing?' playing':' active') : '');
+      div.innerHTML = `
+        <button class="play-btn">${i===cur&&playing?'⏸':'▶'}</button>
+        <div class="track-num">${t.num}</div>
+        <div class="track-info">
+          <div class="track-name">${t.name}</div>
+          <div class="track-why">${t.why}</div>
+        </div>
+        <div class="track-right">
+          <span class="badge badge-${t.badge}">${t.badge.toUpperCase()}</span>
+          <span class="track-dur">${t.dur}</span>
+        </div>`;
+      div.addEventListener('click', () => { i===cur&&playing ? pause() : i===cur ? resume() : play(i); });
+      list.appendChild(div);
     });
+    c.appendChild(list);
   });
 }
 
-function formatTime(s) {
-  const m = Math.floor(s/60), sec = Math.floor(s%60);
-  return m + ':' + String(sec).padStart(2,'0');
-}
-
-function startTimer() {
-  clearInterval(timer);
-  timer = setInterval(() => {
-    if (!audio) return;
-    const pct = audio.duration ? (audio.currentTime / audio.duration * 100) : 0;
-    document.getElementById('pbFill').style.width = pct + '%';
-    document.getElementById('pbElapsed').textContent = formatTime(audio.currentTime);
-    document.getElementById('pbTotal').textContent = audio.duration ? formatTime(audio.duration) : '—';
-  }, 500);
-}
-
-function playTrack(i) {
-  if (audio) { audio.pause(); audio = null; }
-  clearInterval(timer);
-  const t = TRACKS[i];
-  if (!t.file) return;
-  currentIdx = i;
+function play(i) {
+  if (audio) { audio.pause(); clearInterval(timer); }
+  cur = i; const t = TRACKS[i];
   audio = new Audio(t.file);
   audio.playbackRate = speed;
   audio.play();
-  isPlaying = true;
-  document.getElementById('pbTitle').textContent = t.name;
-  document.getElementById('pbSub').textContent = 'Track ' + t.num + ' of 16';
-  document.getElementById('pbPlay').textContent = '⏸';
-  startTimer();
-  audio.onended = () => {
-    isPlaying = false;
-    clearInterval(timer);
-    document.getElementById('pbFill').style.width = '100%';
-    document.getElementById('pbPlay').textContent = '▶';
-    if (i < TRACKS.length - 1) setTimeout(() => playTrack(i+1), 1500);
-    else renderTracks();
-  };
-  renderTracks();
-}
-
-function pauseAudio() {
-  if (audio) audio.pause();
-  isPlaying = false;
-  clearInterval(timer);
-  document.getElementById('pbPlay').textContent = '▶';
-  renderTracks();
-}
-
-function resumeAudio() {
-  if (audio) { audio.play(); isPlaying = true; startTimer(); document.getElementById('pbPlay').textContent = '⏸'; renderTracks(); }
-}
-
-document.getElementById('pbPlay').addEventListener('click', () => {
-  if (currentIdx < 0) { playTrack(0); return; }
-  if (isPlaying) pauseAudio(); else resumeAudio();
-});
-document.getElementById('pbPrev').addEventListener('click', () => { if (currentIdx > 0) playTrack(currentIdx-1); });
-document.getElementById('pbNext').addEventListener('click', () => { if (currentIdx < TRACKS.length-1) playTrack(currentIdx+1); });
-
-document.querySelectorAll('.spd').forEach(btn => {
-  btn.addEventListener('click', () => {
-    speed = parseFloat(btn.dataset.s);
-    document.querySelectorAll('.spd').forEach(b => b.classList.remove('on'));
-    btn.classList.add('on');
-    if (audio) audio.playbackRate = speed;
-  });
-});
-
-renderTracks();
-</script>
-</body>
-</html>
+  playing = true;
+  document.getElementById('pTitle').textContent = t.name;
+  document.getElementById('pSub').textContent = 'Track ' + t.num + ' of 21';
+  document.getElementById('btnPlay').textContent = '⏸';
+  timer = setInterval(() => {
+    if (!audio) return;
+    const pct = audio.duration ? audio.currentTime/audio.duration*100 : 0;
+    document.getElementById('progFill').style.width = pct+'%';
+    document.getElementById('pElapsed').
