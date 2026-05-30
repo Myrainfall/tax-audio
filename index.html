@@ -294,11 +294,30 @@ document.getElementById('btnPlay').addEventListener('click', () => {
 document.getElementById('btnPrev').addEventListener('click', () => { if (cur > 0) playAt(cur - 1, 0); });
 document.getElementById('btnNext').addEventListener('click', () => { if (cur < TRACKS.length - 1) playAt(cur + 1, 0); });
 
-document.getElementById('progBg').addEventListener('click', e => {
-  if (!audio || !audio.duration) return;
-  const r = e.currentTarget.getBoundingClientRect();
-  audio.currentTime = ((e.clientX - r.left) / r.width) * audio.duration;
-});
+// Scrub bar — supports click, mouse drag, and touch drag
+(function() {
+  const bar = document.getElementById('progBg');
+  let dragging = false;
+
+  function scrubTo(clientX) {
+    if (!audio || !audio.duration) return;
+    const r = bar.getBoundingClientRect();
+    const pct = Math.max(0, Math.min(1, (clientX - r.left) / r.width));
+    audio.currentTime = pct * audio.duration;
+    document.getElementById('progFill').style.width = (pct * 100) + '%';
+    document.getElementById('pElapsed').textContent = fmt(audio.currentTime);
+  }
+
+  // Mouse
+  bar.addEventListener('mousedown', e => { dragging = true; scrubTo(e.clientX); e.preventDefault(); });
+  document.addEventListener('mousemove', e => { if (dragging) scrubTo(e.clientX); });
+  document.addEventListener('mouseup',   () => { dragging = false; });
+
+  // Touch
+  bar.addEventListener('touchstart', e => { dragging = true; scrubTo(e.touches[0].clientX); e.preventDefault(); }, { passive: false });
+  bar.addEventListener('touchmove',  e => { if (dragging) scrubTo(e.touches[0].clientX); e.preventDefault(); }, { passive: false });
+  bar.addEventListener('touchend',   () => { dragging = false; });
+})();
 
 document.getElementById('speeds').addEventListener('click', e => {
   const b = e.target.closest('.spd');
