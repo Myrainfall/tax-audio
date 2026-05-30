@@ -40,6 +40,20 @@
   .track.playing .play-btn { background: #7b8cde; color: #fff; }
   .track.done .play-btn { color: #4ade80; font-size: 16px; }
 
+  /* Expanded playing track */
+  .track.playing { flex-wrap: wrap; }
+  .track-expand { display: none; width: 100%; margin-top: 10px; }
+  .track.playing .track-expand { display: block; }
+  .track-expand-time { display: flex; justify-content: space-between; font-size: 11px; color: #555; margin-bottom: 6px; }
+  .track-scrub { position: relative; height: 28px; display: flex; align-items: center; cursor: pointer; touch-action: none; }
+  .track-scrub-bg { width: 100%; height: 6px; background: #2a2d3a; border-radius: 3px; }
+  .track-scrub-fill { position: absolute; left: 0; height: 6px; background: linear-gradient(90deg,#7b8cde,#a78bfa); border-radius: 3px; width: 0%; pointer-events: none; }
+  .track-scrub-thumb { position: absolute; width: 18px; height: 18px; background: #a5b4fc; border-radius: 50%; top: 50%; transform: translate(-50%,-50%); pointer-events: none; left: 0%; box-shadow: 0 0 6px #7b8cde88; }
+
+  /* Bigger touch target on bottom bar */
+  .prog-bg { height: 20px; display: flex; align-items: center; }
+  .prog-fill { height: 4px; border-radius: 2px; }
+
   .track-num { font-size: 12px; color: #3a3f5a; width: 18px; text-align: center; flex-shrink: 0; }
   .track.playing .track-num { color: #7b8cde; }
 
@@ -220,6 +234,17 @@ function render() {
         <div class="track-right">
           <span class="badge badge-${t.badge}">${t.badge.toUpperCase()}</span>
           <span class="track-dur">${t.dur}</span>
+        </div>
+        <div class="track-expand" id="cardExpand">
+          <div class="track-expand-time">
+            <span id="cardElapsed">0:00</span>
+            <span id="cardTotal">—</span>
+          </div>
+          <div class="track-scrub" id="cardScrub">
+            <div class="track-scrub-bg"></div>
+            <div class="track-scrub-fill" id="cardFill"></div>
+            <div class="track-scrub-thumb" id="cardThumb"></div>
+          </div>
         </div>`;
       div.addEventListener('click', () => { isPlaying ? pause() : isActive ? resume() : playAt(i, 0); });
       list.appendChild(div);
@@ -247,6 +272,15 @@ function playAt(i, startTime) {
     document.getElementById('progFill').style.width  = pct + '%';
     document.getElementById('pElapsed').textContent  = fmt(audio.currentTime);
     if (audio.duration) document.getElementById('pTotal').textContent = fmt(audio.duration);
+    // Update in-card scrub bar
+    const cardFill  = document.getElementById('cardFill');
+    const cardThumb = document.getElementById('cardThumb');
+    const cardEl    = document.getElementById('cardElapsed');
+    const cardTot   = document.getElementById('cardTotal');
+    if (cardFill)  { cardFill.style.width = pct + '%'; }
+    if (cardThumb) { cardThumb.style.left = pct + '%'; }
+    if (cardEl)    { cardEl.textContent = fmt(audio.currentTime); }
+    if (cardTot && audio.duration) { cardTot.textContent = fmt(audio.duration); }
     // Save position every 5 seconds
     if (Math.round(audio.currentTime) % 5 === 0) {
       saveSession({ i: cur, time: Math.floor(audio.currentTime) });
@@ -266,6 +300,32 @@ function playAt(i, startTime) {
   saveSession(session);
   render();
   updateResumeBar();
+  // Wire in-card scrub bar
+  wireCardScrub();
+}
+
+function wireCardScrub() {
+  const bar = document.getElementById('cardScrub');
+  if (!bar) return;
+  let dragging = false;
+  function scrubCard(clientX) {
+    if (!audio || !audio.duration) return;
+    const r = bar.getBoundingClientRect();
+    const pct = Math.max(0, Math.min(1, (clientX - r.left) / r.width));
+    audio.currentTime = pct * audio.duration;
+    const fill = document.getElementById('cardFill');
+    const thumb = document.getElementById('cardThumb');
+    if (fill)  fill.style.width = (pct*100)+'%';
+    if (thumb) thumb.style.left = (pct*100)+'%';
+    const el = document.getElementById('cardElapsed');
+    if (el) el.textContent = fmt(audio.currentTime);
+  }
+  bar.addEventListener('mousedown',  e => { dragging=true; scrubCard(e.clientX); e.stopPropagation(); e.preventDefault(); });
+  document.addEventListener('mousemove', e => { if(dragging) scrubCard(e.clientX); });
+  document.addEventListener('mouseup',   () => { dragging=false; });
+  bar.addEventListener('touchstart', e => { dragging=true; scrubCard(e.touches[0].clientX); e.stopPropagation(); e.preventDefault(); }, {passive:false});
+  bar.addEventListener('touchmove',  e => { if(dragging) scrubCard(e.touches[0].clientX); e.stopPropagation(); e.preventDefault(); }, {passive:false});
+  bar.addEventListener('touchend',   () => { dragging=false; });
 }
 
 function pause() {
