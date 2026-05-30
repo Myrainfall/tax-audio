@@ -6,7 +6,7 @@
 <title>Tax Intelligence — Audio</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #0f1117; color: #e0e0e0; min-height: 100vh; padding-bottom: 90px; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #0f1117; color: #e0e0e0; min-height: 100vh; padding-bottom: 110px; }
 
   .hero { padding: 32px 24px 20px; border-bottom: 1px solid #1e2130; }
   .hero h1 { font-size: 24px; font-weight: 700; color: #fff; }
@@ -15,19 +15,30 @@
   .stat-val { font-size: 22px; font-weight: 700; color: #7b8cde; }
   .stat-label { font-size: 11px; color: #555; margin-top: 1px; }
 
+  .resume-bar { display: none; margin: 12px 16px 0; background: #1a2038; border: 1px solid #7b8cde55; border-radius: 10px; padding: 10px 14px; cursor: pointer; }
+  .resume-bar.visible { display: flex; align-items: center; gap: 10px; }
+  .resume-icon { font-size: 18px; }
+  .resume-text { flex: 1; }
+  .resume-title { font-size: 13px; font-weight: 600; color: #a5b4fc; }
+  .resume-sub { font-size: 11px; color: #555; margin-top: 2px; }
+  .resume-btn { font-size: 11px; background: #7b8cde; color: #fff; border: none; border-radius: 6px; padding: 5px 10px; cursor: pointer; white-space: nowrap; }
+
   .section-header { padding: 20px 24px 8px; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: #3a3f5a; display: flex; align-items: center; gap: 8px; }
   .section-header::after { content: ''; flex: 1; height: 1px; background: #1a1d27; }
 
   .track-list { padding: 0 16px; display: flex; flex-direction: column; gap: 8px; }
 
-  .track { background: #1a1d27; border-radius: 12px; padding: 14px 16px; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: background 0.12s; border: 1px solid transparent; }
+  .track { background: #1a1d27; border-radius: 12px; padding: 14px 16px; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: all 0.15s; border: 1px solid transparent; }
   .track:hover { background: #20233a; }
-  .track.active { border-color: #7b8cde33; background: #1c1f35; }
-  .track.playing { border-color: #7b8cde; background: #1a2038; }
+  .track.active  { border-color: #7b8cde33; background: #1c1f35; }
+  .track.playing { border-color: #7b8cde;   background: #1a2038; }
+  .track.done    { opacity: 0.45; }
+  .track.done .track-name { text-decoration: line-through; text-decoration-color: #3a3f5a; }
 
   .play-btn { width: 40px; height: 40px; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 14px; transition: all 0.12s; background: #252840; color: #7b8cde; }
   .track:hover .play-btn { background: #7b8cde22; }
   .track.playing .play-btn { background: #7b8cde; color: #fff; }
+  .track.done .play-btn { color: #4ade80; font-size: 16px; }
 
   .track-num { font-size: 12px; color: #3a3f5a; width: 18px; text-align: center; flex-shrink: 0; }
   .track.playing .track-num { color: #7b8cde; }
@@ -40,8 +51,8 @@
   .track-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
   .badge { font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: 700; letter-spacing: 0.3px; }
   .badge-critical { background: #3d1515; color: #f87171; }
-  .badge-high { background: #152035; color: #60a5fa; }
-  .badge-medium { background: #152515; color: #4ade80; }
+  .badge-high     { background: #152035; color: #60a5fa; }
+  .badge-medium   { background: #152515; color: #4ade80; }
   .track-dur { font-size: 11px; color: #3a3f5a; }
 
   .player { position: fixed; bottom: 0; left: 0; right: 0; background: #13151fee; backdrop-filter: blur(12px); border-top: 1px solid #1e2130; padding: 10px 16px; z-index: 100; }
@@ -77,6 +88,15 @@
   </div>
 </div>
 
+<div class="resume-bar" id="resumeBar">
+  <span class="resume-icon">↩️</span>
+  <div class="resume-text">
+    <div class="resume-title" id="resumeTitle">—</div>
+    <div class="resume-sub" id="resumeSub">Tap to resume where you left off</div>
+  </div>
+  <button class="resume-btn" id="resumeBtn">Resume</button>
+</div>
+
 <div id="listContainer"></div>
 
 <div class="player">
@@ -109,7 +129,6 @@
 
 <script>
 const TRACKS = [
-  // Restaurant & Franchise
   { num:1,  file:"01_13_Audit_Recordkeeping.mp3",   name:"Audit & Recordkeeping",          dur:"~8m",  badge:"critical", group:"restaurant", why:"How the IRS thinks about your restaurants. Start here before anything else." },
   { num:2,  file:"02_06_Sales_Use_Tax.mp3",          name:"Sales & Use Tax",                dur:"~9m",  badge:"critical", group:"restaurant", why:"NY, NJ, CT each draw the line differently on food, catering, and alcohol." },
   { num:3,  file:"03_03_Payroll_Employment.mp3",     name:"Payroll & Employment",           dur:"~9m",  badge:"critical", group:"restaurant", why:"Trust Fund Recovery Penalty is personal. The most important section you'll listen to." },
@@ -126,7 +145,6 @@ const TRACKS = [
   { num:14, file:"14_14_State_Tax_NY.mp3",           name:"State Tax: New York",            dur:"~10m", badge:"critical", group:"restaurant", why:"PTET, UBT, MCTMT — New York is expensive and aggressive." },
   { num:15, file:"15_15_State_Tax_NJ.mp3",           name:"State Tax: New Jersey",          dur:"~8m",  badge:"high",     group:"restaurant", why:"NJ BAIT election, combined reporting, payroll add-ons." },
   { num:16, file:"16_16_State_Tax_CT.mp3",           name:"State Tax: Connecticut",         dur:"~6m",  badge:"medium",   group:"restaurant", why:"CT PTE tax, 7.35% meals rate, Business Entity Tax." },
-  // Warehouse & Logistics
   { num:17, file:"17_17_Logistics_Sales_Tax.mp3",    name:"Logistics Sales Tax",            dur:"~9m",  badge:"critical", group:"logistics",  why:"Warehousing, fulfillment, and transportation are taxed differently in every state. Invoice structure is everything." },
   { num:18, file:"18_18_Nexus_Expansion.mp3",        name:"Nexus: Entering New States",     dur:"~9m",  badge:"critical", group:"logistics",  why:"A warehouse lease creates tax obligations from day one in that state. Know before you sign." },
   { num:19, file:"19_19_Driver_Classification.mp3",  name:"Driver & Worker Classification", dur:"~10m", badge:"critical", group:"logistics",  why:"The most-enforced area in logistics. NJ's ABC test makes nearly all drivers employees." },
@@ -134,10 +152,38 @@ const TRACKS = [
   { num:21, file:"21_21_DOT_Compliance.mp3",         name:"DOT Compliance & Tax",           dur:"~11m", badge:"medium",   group:"logistics",  why:"IFTA, Form 2290, drug testing programs — all deductible, all required to be filed." },
 ];
 
+// --- Persistence helpers ---
+function loadPlayed()   { try { return JSON.parse(localStorage.getItem('txPlayed')||'[]'); } catch(e){ return []; } }
+function savePlayed(a)  { try { localStorage.setItem('txPlayed', JSON.stringify(a)); } catch(e){} }
+function loadSession()  { try { return JSON.parse(localStorage.getItem('txSession')||'null'); } catch(e){ return null; } }
+function saveSession(s) { try { localStorage.setItem('txSession', JSON.stringify(s)); } catch(e){} }
+
+let played  = loadPlayed();   // array of track indices already completed
+let session = loadSession();  // {i, time} last position
+
 let cur = -1, playing = false, speed = 1, audio = null, timer = null;
 
 function fmt(s) { return Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0'); }
 
+// --- Resume bar ---
+function updateResumeBar() {
+  const bar = document.getElementById('resumeBar');
+  if (!session) { bar.classList.remove('visible'); return; }
+  const t = TRACKS[session.i];
+  document.getElementById('resumeTitle').textContent = 'Track ' + t.num + ': ' + t.name;
+  document.getElementById('resumeSub').textContent   = 'Last position: ' + fmt(session.time||0);
+  bar.classList.add('visible');
+}
+
+document.getElementById('resumeBtn').addEventListener('click', () => {
+  if (!session) return;
+  playAt(session.i, session.time || 0);
+});
+document.getElementById('resumeBar').addEventListener('click', e => {
+  if (e.target.id !== 'resumeBtn' && session) playAt(session.i, session.time || 0);
+});
+
+// --- Render track list ---
 function render() {
   const c = document.getElementById('listContainer');
   const groups = [
@@ -154,10 +200,18 @@ function render() {
     list.className = 'track-list';
     TRACKS.filter(t => t.group === g.key).forEach(t => {
       const i = TRACKS.indexOf(t);
+      const isDone    = played.includes(i);
+      const isPlaying = i === cur && playing;
+      const isActive  = i === cur && !playing;
+      let cls = 'track';
+      if (isPlaying) cls += ' playing';
+      else if (isActive) cls += ' active';
+      if (isDone && i !== cur) cls += ' done';
+      const icon = isPlaying ? '⏸' : isDone ? '✓' : '▶';
       const div = document.createElement('div');
-      div.className = 'track' + (i===cur ? (playing?' playing':' active') : '');
+      div.className = cls;
       div.innerHTML = `
-        <button class="play-btn">${i===cur&&playing?'⏸':'▶'}</button>
+        <button class="play-btn">${icon}</button>
         <span class="track-num">${t.num}</span>
         <div class="track-info">
           <div class="track-name">${t.name}</div>
@@ -167,57 +221,78 @@ function render() {
           <span class="badge badge-${t.badge}">${t.badge.toUpperCase()}</span>
           <span class="track-dur">${t.dur}</span>
         </div>`;
-      div.addEventListener('click', () => { i===cur&&playing ? pause() : i===cur ? resume() : play(i); });
+      div.addEventListener('click', () => { isPlaying ? pause() : isActive ? resume() : playAt(i, 0); });
       list.appendChild(div);
     });
     c.appendChild(list);
   });
 }
 
-function play(i) {
+// --- Playback ---
+function playAt(i, startTime) {
   if (audio) { audio.pause(); clearInterval(timer); }
-  cur = i; const t = TRACKS[i];
+  cur = i;
+  const t = TRACKS[i];
   audio = new Audio(t.file);
   audio.playbackRate = speed;
+  if (startTime > 0) audio.currentTime = startTime;
   audio.play().catch(()=>{});
   playing = true;
   document.getElementById('pTitle').textContent = t.name;
-  document.getElementById('pSub').textContent = 'Track ' + t.num + ' of 21';
+  document.getElementById('pSub').textContent   = 'Track ' + t.num + ' of 21';
   document.getElementById('btnPlay').textContent = '⏸';
   timer = setInterval(() => {
     if (!audio) return;
-    const pct = audio.duration ? audio.currentTime/audio.duration*100 : 0;
-    document.getElementById('progFill').style.width = pct+'%';
-    document.getElementById('pElapsed').textContent = fmt(audio.currentTime);
+    const pct = audio.duration ? audio.currentTime / audio.duration * 100 : 0;
+    document.getElementById('progFill').style.width  = pct + '%';
+    document.getElementById('pElapsed').textContent  = fmt(audio.currentTime);
     if (audio.duration) document.getElementById('pTotal').textContent = fmt(audio.duration);
+    // Save position every 5 seconds
+    if (Math.round(audio.currentTime) % 5 === 0) {
+      saveSession({ i: cur, time: Math.floor(audio.currentTime) });
+    }
   }, 500);
   audio.onended = () => {
     clearInterval(timer);
-    if (cur < TRACKS.length-1) play(cur+1);
-    else { playing=false; document.getElementById('btnPlay').textContent='▶'; render(); }
+    // Mark as played
+    if (!played.includes(i)) { played.push(i); savePlayed(played); }
+    saveSession(null);
+    session = null;
+    if (cur < TRACKS.length - 1) playAt(cur + 1, 0);
+    else { playing = false; document.getElementById('btnPlay').textContent = '▶'; render(); updateResumeBar(); }
   };
+  // Save session immediately
+  session = { i, time: startTime };
+  saveSession(session);
   render();
+  updateResumeBar();
 }
 
 function pause() {
-  audio.pause(); playing = false;
+  audio.pause();
+  playing = false;
+  saveSession({ i: cur, time: Math.floor(audio.currentTime) });
+  session = { i: cur, time: Math.floor(audio.currentTime) };
   document.getElementById('btnPlay').textContent = '▶';
   render();
+  updateResumeBar();
 }
 
 function resume() {
-  audio.play().catch(()=>{}); playing = true;
+  audio.play().catch(()=>{});
+  playing = true;
   document.getElementById('btnPlay').textContent = '⏸';
   render();
 }
 
+// --- Controls ---
 document.getElementById('btnPlay').addEventListener('click', () => {
-  if (cur === -1) play(0);
+  if (cur === -1) playAt(0, 0);
   else if (playing) pause();
   else resume();
 });
-document.getElementById('btnPrev').addEventListener('click', () => { if (cur > 0) play(cur-1); });
-document.getElementById('btnNext').addEventListener('click', () => { if (cur < TRACKS.length-1) play(cur+1); });
+document.getElementById('btnPrev').addEventListener('click', () => { if (cur > 0) playAt(cur - 1, 0); });
+document.getElementById('btnNext').addEventListener('click', () => { if (cur < TRACKS.length - 1) playAt(cur + 1, 0); });
 
 document.getElementById('progBg').addEventListener('click', e => {
   if (!audio || !audio.duration) return;
@@ -225,7 +300,6 @@ document.getElementById('progBg').addEventListener('click', e => {
   audio.currentTime = ((e.clientX - r.left) / r.width) * audio.duration;
 });
 
-// Event delegation — survives render() replacing the track list DOM
 document.getElementById('speeds').addEventListener('click', e => {
   const b = e.target.closest('.spd');
   if (!b) return;
@@ -235,7 +309,9 @@ document.getElementById('speeds').addEventListener('click', e => {
   b.classList.add('on');
 });
 
+// --- Init ---
 render();
+updateResumeBar();
 </script>
 </body>
 </html>
