@@ -279,16 +279,13 @@ function render() {
     scrub.addEventListener('input', () => {
       scrubbing = true;
       if (audio && audio.duration) {
-        const t = (scrub.value / 1000) * audio.duration;
-        document.getElementById('cardElapsed').textContent = fmt(t);
-      }
-    });
-    scrub.addEventListener('change', () => {
-      if (audio && audio.duration) {
         audio.currentTime = (scrub.value / 1000) * audio.duration;
+        const el = document.getElementById('cardElapsed');
+        if (el) el.textContent = fmt(audio.currentTime);
       }
-      scrubbing = false;
     });
+    scrub.addEventListener('change', () => { scrubbing = false; });
+    scrub.addEventListener('touchend', () => { scrubbing = false; });
   }
 }
 
