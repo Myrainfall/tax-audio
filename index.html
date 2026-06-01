@@ -6,53 +6,6 @@
 <title>Tax Intelligence — Audio</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #0f1117; color: #e0e0e0; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
-  .gate { background: #1a1d27; border: 1px solid #252840; border-radius: 16px; padding: 40px 32px; max-width: 340px; width: 90%; text-align: center; }
-  .gate h1 { font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 6px; }
-  .gate p  { font-size: 13px; color: #555; margin-bottom: 28px; }
-  .gate input { width: 100%; background: #0f1117; border: 1px solid #252840; border-radius: 8px; padding: 12px 16px; font-size: 16px; color: #e0e0e0; outline: none; text-align: center; letter-spacing: 4px; margin-bottom: 12px; }
-  .gate input:focus { border-color: #7b8cde; }
-  .gate button { width: 100%; background: #7b8cde; color: #fff; border: none; border-radius: 8px; padding: 12px; font-size: 15px; font-weight: 600; cursor: pointer; }
-  .gate button:hover { background: #8f9de8; }
-  .gate .err { font-size: 12px; color: #f87171; margin-top: 10px; display: none; }
-</style>
-</head>
-<body>
-<div class="gate">
-  <h1>🎧 Tax Intelligence</h1>
-  <p>Enter your access code to continue</p>
-  <input type="password" id="pw" placeholder="••••••••••" autofocus>
-  <button onclick="check()">Unlock</button>
-  <div class="err" id="err">Incorrect code. Try again.</div>
-</div>
-<script>
-const HASH = "3760cc9ed07659fcae860bcc888350bd1857b104ac5ff3477a2fa5add0a3665b";
-async function sha256(str) {
-  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
-  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
-}
-// Auto-unlock if previously authenticated
-if (localStorage.getItem('txAuth') === HASH) showPlayer();
-
-async function check() {
-  const val = document.getElementById('pw').value;
-  const h = await sha256(val);
-  if (h === HASH) { localStorage.setItem('txAuth', HASH); showPlayer(); }
-  else { document.getElementById('err').style.display = 'block'; }
-}
-document.getElementById('pw').addEventListener('keydown', e => { if (e.key === 'Enter') check(); });
-
-function showPlayer() {
-  document.open(); document.write(PLAYER); document.close();
-}
-const PLAYER = `<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tax Intelligence — Audio</title>
-<style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #0f1117; color: #e0e0e0; min-height: 100vh; padding-bottom: 90px; }
 
   .hero { padding: 32px 24px 20px; border-bottom: 1px solid #1e2130; }
@@ -280,17 +233,17 @@ function render() {
 
       const div = document.createElement('div');
       div.className = cls;
-      div.innerHTML = \`
+      div.innerHTML = `
         <div class="track-row">
-          <button class="play-btn">\${icon}</button>
-          <span class="track-num">\${t.num}</span>
+          <button class="play-btn">${icon}</button>
+          <span class="track-num">${t.num}</span>
           <div class="track-info">
-            <div class="track-name">\${t.name}</div>
-            <div class="track-why">\${t.why}</div>
+            <div class="track-name">${t.name}</div>
+            <div class="track-why">${t.why}</div>
           </div>
           <div class="track-right">
-            <span class="badge badge-\${t.badge}">\${t.badge.toUpperCase()}</span>
-            <span class="track-dur">\${t.dur}</span>
+            <span class="badge badge-${t.badge}">${t.badge.toUpperCase()}</span>
+            <span class="track-dur">${t.dur}</span>
           </div>
         </div>
         <div class="track-expand">
@@ -299,7 +252,7 @@ function render() {
             <span id="cardTotal">—</span>
           </div>
           <input type="range" class="scrubber" id="cardScrub" min="0" max="1000" value="0" step="1">
-        </div>\`;
+        </div>`;
 
       // Clicking the row toggles play/pause; scrubber handles its own events
       div.querySelector('.track-row').addEventListener('click', () => {
@@ -411,10 +364,6 @@ document.getElementById('speeds').addEventListener('click', e => {
 
 render();
 updateResumeBar();
-</script>
-</body>
-</html>
-`;
 </script>
 </body>
 </html>
