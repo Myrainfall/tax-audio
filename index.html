@@ -118,10 +118,11 @@
   <h1>🎧 Tax Intelligence</h1>
   <p>21 episodes · Restaurant, Franchise &amp; Logistics · Federal + NY / NJ / CT</p>
   <div class="stats">
-    <div><div class="stat-val">21</div><div class="stat-label">Episodes</div></div>
-    <div><div class="stat-val">~3h</div><div class="stat-label">Total</div></div>
+    <div><div class="stat-val">27</div><div class="stat-label">Episodes</div></div>
+    <div><div class="stat-val">~4h</div><div class="stat-label">Total</div></div>
     <div><div class="stat-val">16</div><div class="stat-label">Restaurant topics</div></div>
     <div><div class="stat-val">5</div><div class="stat-label">Logistics topics</div></div>
+    <div><div class="stat-val">6</div><div class="stat-label">Real estate topics</div></div>
   </div>
 </div>
 
@@ -175,6 +176,13 @@ const TRACKS = [
   { num:14, file:"14_14_State_Tax_NY.mp3",           name:"State Tax: New York",            dur:"~10m", badge:"critical", group:"restaurant", why:"PTET, UBT, MCTMT — New York is expensive and aggressive." },
   { num:15, file:"15_15_State_Tax_NJ.mp3",           name:"State Tax: New Jersey",          dur:"~8m",  badge:"high",     group:"restaurant", why:"NJ BAIT election, combined reporting, payroll add-ons." },
   { num:16, file:"16_16_State_Tax_CT.mp3",           name:"State Tax: Connecticut",         dur:"~6m",  badge:"medium",   group:"restaurant", why:"CT PTE tax, 7.35% meals rate, Business Entity Tax." },
+  { num:22, file:"22_22_Landlord_Federal.mp3",     name:"Landlord Tax: Federal",          dur:"~9m",  badge:"high",     group:"realestate", why:"Passive activity rules, depreciation, 1031 exchanges — the federal framework every landlord must know." },
+  { num:23, file:"23_23_Real_Estate_NYC_NYS.mp3",  name:"Real Estate: NYC & New York",    dur:"~9m",  badge:"critical", group:"realestate", why:"NYC transfer taxes, rent stabilization, RPTT, 421-a — New York real estate is its own tax world." },
+  { num:24, file:"24_24_Real_Estate_NJ.mp3",       name:"Real Estate: New Jersey",        dur:"~8m",  badge:"high",     group:"realestate", why:"NJ transfer fees, non-resident withholding, bulk sale rules — NJ has traps most landlords miss." },
+  { num:25, file:"25_25_Real_Estate_CT.mp3",       name:"Real Estate: Connecticut",       dur:"~9m",  badge:"medium",   group:"realestate", why:"CT conveyance tax tiers, luxury surcharge, PTE on rental income." },
+  { num:26, file:"26_26_Real_Estate_Virginia.mp3", name:"Real Estate: Virginia",          dur:"~9m",  badge:"medium",   group:"realestate", why:"VA income tax, recordation tax, BPOL, Northern Virginia locality rules." },
+  { num:27, file:"27_27_Landlord_Multi_State.mp3", name:"Landlord Multi-State Strategy",  dur:"~9m",  badge:"high",     group:"realestate", why:"PropCo structures, multi-state filing, cost segregation, 1031 across states — the full landlord playbook." },
+  // Warehouse & Logistics
   { num:17, file:"17_17_Logistics_Sales_Tax.mp3",    name:"Logistics Sales Tax",            dur:"~9m",  badge:"critical", group:"logistics",  why:"Warehousing, fulfillment, and transportation are taxed differently in every state. Invoice structure is everything." },
   { num:18, file:"18_18_Nexus_Expansion.mp3",        name:"Nexus: Entering New States",     dur:"~9m",  badge:"critical", group:"logistics",  why:"A warehouse lease creates tax obligations from day one in that state. Know before you sign." },
   { num:19, file:"19_19_Driver_Classification.mp3",  name:"Driver & Worker Classification", dur:"~10m", badge:"critical", group:"logistics",  why:"The most-enforced area in logistics. NJ's ABC test makes nearly all drivers employees." },
@@ -211,6 +219,7 @@ function render() {
   const groups = [
     { key:'restaurant', label:'🍽️ Restaurant & Franchise — 16 Episodes' },
     { key:'logistics',  label:'📦 Warehouse & Logistics — 5 Episodes' },
+    { key:'realestate', label:'🏢 Real Estate & Landlord — 6 Episodes' },
   ];
   c.innerHTML = '';
   groups.forEach(g => {
@@ -308,7 +317,7 @@ function playAt(i, startTime) {
   if (startTime > 0) audio.currentTime = startTime;
   audio.play().catch(()=>{});
   playing = true;
-  document.getElementById('pSub').textContent = 'Track ' + t.num + ' of 21';
+  document.getElementById('pSub').textContent = 'Track ' + t.num + ' of 27';
   document.getElementById('btnPlay').textContent = '⏸';
   timer = setInterval(() => {
     if (!audio) return;
