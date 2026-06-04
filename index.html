@@ -312,6 +312,24 @@ function updateScrubber() {
   document.getElementById('pTitle').textContent = TRACKS[cur].name;
 }
 
+function fadeOut(audioEl, ms, cb) {
+  const steps = ms / 40;
+  const dec = audioEl.volume / steps;
+  const iv = setInterval(() => {
+    audioEl.volume = Math.max(0, audioEl.volume - dec);
+    if (audioEl.volume <= 0) { clearInterval(iv); audioEl.pause(); cb(); }
+  }, 40);
+}
+
+function fadeIn(audioEl, ms) {
+  audioEl.volume = 0;
+  const inc = 1 / (ms / 40);
+  const iv = setInterval(() => {
+    audioEl.volume = Math.min(1, audioEl.volume + inc);
+    if (audioEl.volume >= 1) clearInterval(iv);
+  }, 40);
+}
+
 function playAt(i, startTime) {
   if (audio) { audio.pause(); clearInterval(timer); }
   cur = i;
@@ -320,6 +338,7 @@ function playAt(i, startTime) {
   audio.playbackRate = speed;
   if (startTime > 0) audio.currentTime = startTime;
   audio.play().catch(()=>{});
+  fadeIn(audio, 800);
   playing = true;
   document.getElementById('pSub').textContent = 'Track ' + t.num + ' of 27';
   document.getElementById('btnPlay').textContent = '⏸';
@@ -331,6 +350,18 @@ function playAt(i, startTime) {
       saveSession(session);
     }
   }, 400);
+  audio.addEventListener('timeupdate', function checkFade() {
+    if (audio && audio.duration && audio.currentTime >= audio.duration - 1.5) {
+      audio.removeEventListener('timeupdate', checkFade);
+      const step = 40, steps = 1500 / step;
+      const dec = audio.volume / steps;
+      const iv = setInterval(() => {
+        if (!audio) { clearInterval(iv); return; }
+        audio.volume = Math.max(0, audio.volume - dec);
+        if (audio.volume <= 0) clearInterval(iv);
+      }, step);
+    }
+  });
   audio.onended = () => {
     clearInterval(timer);
     if (!played.includes(i)) { played.push(i); savePlayed(played); }
