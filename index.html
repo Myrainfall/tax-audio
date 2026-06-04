@@ -267,6 +267,13 @@ function render() {
       div.querySelector('.track-row').addEventListener('click', () => {
         isPlaying ? pause() : isActive ? resume() : playAt(i, 0);
       });
+      const scrubEl = div.querySelector('.scrubber');
+      if (scrubEl) {
+        scrubEl.addEventListener('click',      e => e.stopPropagation());
+        scrubEl.addEventListener('touchstart', e => e.stopPropagation(), {passive:true});
+        scrubEl.addEventListener('touchend',   e => e.stopPropagation(), {passive:true});
+        scrubEl.addEventListener('touchmove',  e => e.stopPropagation(), {passive:true});
+      }
 
       list.appendChild(div);
     });
