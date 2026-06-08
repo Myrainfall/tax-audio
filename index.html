@@ -160,6 +160,7 @@
 
 <script>
 const TRACKS = [
+  { num:0,  file:"weekly_briefing_latest.mp3", name:"🔴 LIVE: Weekly Briefing — 2026-06-08", dur:"~4m", badge:"critical", group:"briefing", why:"This week's tax changes relevant to your restaurants, real estate, and logistics operations." },
   { num:1,  file:"01_13_Audit_Recordkeeping.mp3",   name:"Audit & Recordkeeping",          dur:"~8m",  badge:"critical", group:"restaurant", why:"How the IRS thinks about your restaurants. Start here before anything else." },
   { num:2,  file:"02_06_Sales_Use_Tax.mp3",          name:"Sales & Use Tax",                dur:"~9m",  badge:"critical", group:"restaurant", why:"NY, NJ, CT each draw the line differently on food, catering, and alcohol." },
   { num:3,  file:"03_03_Payroll_Employment.mp3",     name:"Payroll & Employment",           dur:"~9m",  badge:"critical", group:"restaurant", why:"Trust Fund Recovery Penalty is personal. The most important section you'll listen to." },
@@ -217,6 +218,7 @@ document.getElementById('resumeBar').addEventListener('click', e => { if (e.targ
 function render() {
   const c = document.getElementById('listContainer');
   const groups = [
+    { key:'briefing', label:'🔴 This Week — Weekly Briefing' },
     { key:'restaurant', label:'🍽️ Restaurant & Franchise — 16 Episodes' },
     { key:'logistics',  label:'📦 Warehouse & Logistics — 5 Episodes' },
     { key:'realestate', label:'🏢 Real Estate & Landlord — 6 Episodes' },
